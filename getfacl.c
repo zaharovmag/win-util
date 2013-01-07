@@ -30,6 +30,10 @@ int main(int argc, char ** argv)
   struct ace * ace_cur = NULL;
   struct ace * ace_next = NULL;
 
+
+
+  memset(&acl,0,sizeof(struct acl));
+
   GetFileSecurity(argv[1],
 		  DACL_SECURITY_INFORMATION |
 		  GROUP_SECURITY_INFORMATION|
@@ -61,19 +65,22 @@ int main(int argc, char ** argv)
   printf("Owner:%s\n",acl.owner);
   printf("Group:%s\n",acl.group);
 
-  if (acl.list_ace != NULL)
+  
+  if (acl.list_ace != NULL){
     ace_cur = acl.list_ace;
 
-  while(ace_cur->next != NULL){
-    printf("%s\n",ace_cur->ap);
-    ace_cur = ace_cur->next;
-  }
+    while(ace_cur->next != NULL){
+      printf("%s\n",ace_cur->ap);
+      ace_cur = ace_cur->next;
+    }
   
-  /*Free Memory*/
-  ace_cur = acl.list_ace;
-  while(ace_cur->next != NULL){
-    ace_next = ace_cur->next;
-    free(ace_cur);
-    ace_cur = ace_next;
+  
+    /*Free Memory*/
+    ace_cur = acl.list_ace;
+    while(ace_cur->next != NULL){
+      ace_next = ace_cur->next;
+      free(ace_cur);
+      ace_cur = ace_next;
+    }
   }
 }

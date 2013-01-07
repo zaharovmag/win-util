@@ -61,8 +61,8 @@ int get_file_acl(PSECURITY_DESCRIPTOR pSD,struct acl * acl)
     return (-1);
   }
 
-
-  get_ace(pDacl,acl,&eUse);
+  if (pDacl != NULL)
+    get_ace(pDacl,acl,&eUse);
 
 
   return (0);
@@ -123,9 +123,9 @@ int get_account_sid(PSID pSid,char * account,size_t acclen,
 
 
   if (dwDomainLen <= 1)
-    snprintf(account,acclen,"%s",szAccountName);
+    _snprintf(account,acclen,"%s",szAccountName);
   else
-    snprintf(account,acclen,"%s\\%s",szDomainName,szAccountName);
+    _snprintf(account,acclen,"%s\\%s",szDomainName,szAccountName);
   
   
  free_mem:
@@ -208,7 +208,7 @@ int get_ace(PACL pAcl,struct acl * acl,SID_NAME_USE * peUse)
       ace_post[ACL_EXECUTE_POS] = ACL_EXECUTE;
       }
   }
-  snprintf(ace_cur->ap,MAX_LEN -1,"%s%s%s",ace_pref,buf,ace_post);
+  _snprintf(ace_cur->ap,MAX_LEN -1,"%s%s%s",ace_pref,buf,ace_post);
   
   ace_cur->next = (struct ace *) malloc(sizeof(struct ace));
   if (ace_cur->next == NULL){
@@ -254,10 +254,10 @@ int get_textual_sid(PSID pSid,char * buf,size_t len)
     return -1;
   }
 
-  snprintf(buf,len,"S-%lu-",dwSidRev);
+  _snprintf(buf,len,"S-%lu-",dwSidRev);
 
   if ( (psia->Value[0] != 0) || (psia->Value[1] != 0) ){
-    snprintf(buf + strlen(buf),len-(strlen(buf)+1),
+    _snprintf(buf + strlen(buf),len-(strlen(buf)+1),
 	    "0x%02hx%02hx%02hx%02hx%02hx%02hx",
 	    (USHORT) psia->Value[0],
 	    (USHORT) psia->Value[1],
@@ -266,7 +266,7 @@ int get_textual_sid(PSID pSid,char * buf,size_t len)
 	    (USHORT) psia->Value[4],
 	    (USHORT) psia->Value[5]);
   }else {
-    snprintf(buf + strlen(buf),len - (strlen(buf)+1),
+    _snprintf(buf + strlen(buf),len - (strlen(buf)+1),
 	      "%lu",
 	      (USHORT) (psia->Value[5])      +
 	      (USHORT) (psia->Value[4] <<  8)+
@@ -275,7 +275,7 @@ int get_textual_sid(PSID pSid,char * buf,size_t len)
   }
 
   for (dwCounter = 0; dwCounter < dwSubAuthorities; dwCounter++){
-    snprintf(buf + strlen(buf),len - (strlen(buf)+1),"-%lu",
+    _snprintf(buf + strlen(buf),len - (strlen(buf)+1),"-%lu",
 	      *GetSidSubAuthority(pSid,dwCounter));
   }
   
